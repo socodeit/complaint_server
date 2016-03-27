@@ -9,7 +9,11 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.15.0",
+    "cookie-parser": "^1.4.1",
+    "cookies": "^0.6.1",
     "express": "^4.13.4",
+    "express-jwt": "^3.3.0",
+    "jsonwebtoken": "^5.7.0",
     "mongoose": "^4.4.6",
     "mongoose-timestamp": "^0.5.0",
     "mongoose-unique-validator": "^1.0.2",

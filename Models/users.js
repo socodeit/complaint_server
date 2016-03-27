@@ -53,19 +53,19 @@ module.exports.addUser = function(body,res){
     user.userid = body.userid;
     //TODO:To be encrypted
     user.password = body.password;
-    user.name = body.name;
-    user.authority = body.authority;
+    user.name = "Vinay";
+    user.type = "none";
     user.user_image_link = "none";
-    user.is_hostel = body.is_hostel;
-    user.hostel_name = body.hostel_name;
-    user.is_special = body.is_special;
+    user.is_hostel = false;
+    user.hostel_name = "";
+    user.is_special = false;
     
     user.save(function(err){
         // save() will run insert() command of MongoDB.
         // it will add new data in collection.
         var response;
             if(err) {
-                response = {"error" : true,"message" : "Unable to save user"};
+                response = {"error" : true,"message" : "Unable to add user"};
             } else {
                 response = {"error" : false,"message" : "User added"};
             }
@@ -101,3 +101,19 @@ module.exports.getUserDetail = function(body,res){
             res.json(response);
     });   
 };
+
+//TODO:using bcrypt for storing password
+module.exports.isUser = function(body,next){
+    var response={};
+    User.find({userid: body.userid},function(err, data) {
+        if(err) {
+                response = {"error" : true,"message" : "Error fetching data"};
+            } else {
+                if(data[0].password == body.password)
+                    response = {"error" : false,"data" : data[0]};
+                else
+                    response = {"error" : true,"message" : "Authentication failed"};
+            }
+    next(response);
+    }); 
+}
