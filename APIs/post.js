@@ -3,6 +3,9 @@ var router = express.Router();
 var jwt = require('jsonwebtoken');
 var config = require('../config');
 var Users = require('../Models/users');
+var Authoritites = require('../Models/authorities');
+var Hostel = require('../Models/hostels');
+var Complaint = require('../Models/complaints')
 
 //authentication using jwt
 router.use(function(req,res,next){
@@ -35,19 +38,31 @@ router.use(function(req,res,next){
 });
 
 
-
 router.get('/', function(req, res) {
-  res.send('Try again');
+  res.send('Not correct url');
 });
 
-router.post('/add',function(req,res){
+//Add User
+router.post('/user',function(req,res){
   Users.addUser(req.body,res);
 });
 
-router.post('/get',function(req, res) {
-    Users.getUserDetail(req.body,res);
+//Add Authority
+router.post('/authority',function(req, res) {
+    Authoritites.addAuthority(req.body,res);
+})
+
+//Add Hostel
+router.post('/hostel',function(req, res) {
+    Hostel.addHostel(req.body,res);
+})
+
+//Add Complaint
+router.post('/complaint',function(req, res) {
+    Complaint.addComplaint(req.body,res);
 });
 
+//TODO:remove this
 router.get('/all', function(req, res) {
   Users.showAll(res);
 });

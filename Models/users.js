@@ -18,10 +18,6 @@ var userSchema   = new mongoose.Schema({
         type: String,
         required: true
     },
-    authority: {
-        type: String,
-        required: true
-    },
     user_image_link: {
         type: String
     },

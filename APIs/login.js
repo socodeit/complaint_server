@@ -4,11 +4,7 @@ var Users = require('../Models/users');
 var jwt = require('jsonwebtoken');
 var config = require('../config')
 
-
-router.get('/', function(req, res) {
-  res.send('Try again');
-});
-
+//LOGINs
 router.post('/',function(req,res){
   Users.isUser(req.body,function(response){
         if(response.error == false)
@@ -17,7 +13,7 @@ router.post('/',function(req,res){
             expiresIn: "30d"
           });
           res.cookie('token',token, { maxAge: 30*24*3600*1000, httpOnly: true })
-             .json({Token:token});
+             .json(response.data);
         }
         else
           res.json({"error":true,"message":"Authentcation falure"});
