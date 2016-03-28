@@ -15,6 +15,7 @@ app.use(cookieParser());
 
 //Routes
 app.use('/add',require('./APIs/post'));
+app.use('/get',require('./APIs/get'));
 app.use('/login',require('./APIs/login'));
 app.use('/logout',require('./APIs/logout'));
 //Start Server 
