@@ -38,15 +38,29 @@ router.use(function(req,res,next){
 });
 
 //View Complaint based on complaint-level
-router.get('/complaint',function(req,res){
+//Require hostel_name,userid,compplaint_level
+router.post('/complaint',function(req,res){
     switch(req.body.complaint_level)
     {
-        case 0:Complaint.getIndividualComplaints(req.body.userid,res);break;
-        case 1:Complaint.getHostelComplaints(req.body.hostel_name,res);break;
-        case 2:Complaint.getInstituteComplaints(res);break;
+        case '0':Complaint.getIndividualComplaints(req.body.userid,res);break;
+        case '1':Complaint.getHostelComplaints(req.body.hostel_name,res);break;
+        case '2':Complaint.getInstituteComplaints(res);break;
     }
+    
 });
 
+//To get image
+router.get('/uploads/:id',function(req, res) {
+  res.download( __dirname + "/uploads/" + req.params.id +".png");
+});
+
+router.get('/authorities',function(req, res) {
+    Authoritites.showAll(res);
+})
+
+router.get('/hostels',function(req, res) {
+    Hostel.showAll(res);
+})
 
 
 module.exports = router;

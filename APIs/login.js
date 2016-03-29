@@ -6,6 +6,7 @@ var config = require('../config')
 
 //LOGINs
 router.post('/',function(req,res){
+  console.log(req.body);
   Users.isUser(req.body,function(response){
         if(response.error == false)
         {

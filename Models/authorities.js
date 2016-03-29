@@ -50,10 +50,29 @@ module.exports.addAuthority = function(body,res){
     
 };
 
+//TODO:using bcrypt for storing password
+module.exports.isAuthority = function(body,next){
+    var response={};
+    Authority.findOne({authority_id: body.authority_id},function(err, data) {
+        if(err) {
+                response = {"error" : true,"message" : "Error fetching data"};
+            } else {
+                console.log(data == null);
+                if(data==null)
+                response = {"error" : true,"message" : "Authentication failed"};
+                else if(data.password == body.password)
+                    response = {"error" : false,"data" : data[0]};
+                else
+                    response = {"error" : true,"message" : "Authentication failed"};
+            }
+    next(response);
+    }); 
+};
+
 // To get all authorities
 module.exports.showAll = function(res){
     var response ={};
-    Authority.find({},function(err,data){
+    Authority.find({},'authority_name',function(err,data){
        if(err) {
                 response = {"error" : true,"message" : "Error fetching data"};
             } else {

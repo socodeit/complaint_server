@@ -1,6 +1,7 @@
 // Dependencies
 var mongoose = require('mongoose');
 var uniqueValidator = require('mongoose-unique-validator');
+var fs = require('fs-extra');
 
 // user schema
 var userSchema   = new mongoose.Schema({
@@ -105,11 +106,43 @@ module.exports.isUser = function(body,next){
         if(err) {
                 response = {"error" : true,"message" : "Error fetching data"};
             } else {
-                if(data[0].password == body.password)
+                if(data == null)
+                response = {"error" : true,"message" : "Authentication failed"};
+                else if(data[0].password == body.password)
                     response = {"error" : false,"data" : data[0]};
                 else
                     response = {"error" : true,"message" : "Authentication failed"};
             }
     next(response);
     }); 
-}
+};
+
+//Require "profile_photo" 
+module.exports.updateProfile = function(body,files,res){
+    
+    fs.readFile(files.profile_photo.path, function (err, data) {
+        if(err)
+            res.json({ error:true , message:"Unable to read file."});
+        else
+            var newPath = __dirname + "/uploads/" + body.userid +".png";
+            fs.writeFile(newPath, data, function (err) {
+                if(err)
+                res.json({ error:true , message:"Unable to write image."});
+                
+        });
+    });
+    
+    User.findOne({userid: body.userid},function(err, data) {
+        if(err)
+            res.json({error:true , message:"Unable to fetch data."});
+        data.user_image_link="/get/uploads/"+body.userid +".png";
+        
+        data.save(function(err){
+            if(err)
+                res.json({error:true , message:"Unable to save image."});
+        });
+        
+        res.json({error:false, message:"/get/uploads/"+body.userid +".png"});
+    });
+    
+};

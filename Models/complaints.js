@@ -55,7 +55,7 @@ var complaintSchema   = new mongoose.Schema({
         userid:[String]
     }, 
     tags: [String],
-    comments: [{ comment_id:{type:Number,required:true} , userid:{type:String,required:true} , name:{type:String,required:true} ,comment:{type:String,required:true} ,likes:{count:{type:Number,default:0}, userid:[String]}]
+    comments: [{ comment_id:{type:Number,required:true} , userid:{type:String,required:true} , name:{type:String,required:true} ,comment:{type:String,required:true} ,likes:{count:{type:Number,default:0}, userid:[String]} }]
 });
 
 
@@ -64,7 +64,7 @@ autoIncrement.initialize(mongoose.connection);
 // Apply the uniqueValidator plugin to userSchema. 
 complaintSchema.plugin(uniqueValidator);
 complaintSchema.plugin(timestamps);
-complaintSchema.plugin(autoIncrement, {model: 'complaints', field: 'complaint_id'});
+complaintSchema.plugin(autoIncrement.plugin, {model: 'complaints', field: 'complaint_id'});
 
 var Complaint = mongoose.model('complaints',complaintSchema);
 
@@ -85,7 +85,7 @@ module.exports.addComplaint = function(body,res){
     
     if(complaint.complaint_level <= 1)
     {
-        complaint.hostel_name = body.hostel_name;
+        complaint.hostel_name = body.hostel_name || "Karakoram";
     }
     
     complaint.authority_name = body.authority_name;
@@ -170,7 +170,7 @@ module.exports.upvoteComplaint = function(body,res){
         else
         {
             //to find 
-            if(data.upvotes.userid.indexOf(body.userid) == -1)
+            if(data.upvotes.userid.indexOf(body.userid) == -1 && data.upvotes.userid.indexOf(body.userid) == -1)
             {
                 data.upvotes.count+=1;
                 data.upvotes.userid.push(body.userid);
@@ -183,7 +183,7 @@ module.exports.upvoteComplaint = function(body,res){
                 res.json({error:false , message: "Complaint Upvoted Successfully"});
             }
             else{
-                res.json({error:true , message: "Complaint Already Upvoted"});
+                res.json({error:true , message: "Complaint Already Voted"});
             }
         }
     });
@@ -200,7 +200,7 @@ module.exports.downvoteComplaint = function(body,res){
         else
         {
             //to find 
-            if(data.downvotes.userid.indexOf(body.userid) == -1)
+            if(data.downvotes.userid.indexOf(body.userid) == -1 && data.upvotes.userid.indexOf(body.userid) == -1 )
             {
                 data.downvotes.count+=1;
                 data.downvotes.userid.push(body.userid);
@@ -219,7 +219,7 @@ module.exports.downvoteComplaint = function(body,res){
     });
 };
 
-//To comment on a complaint, Require "userid", "name" & "complaint_id"
+//To comment on a complaint, Require "userid", "name" , "comment" & "complaint_id"
 module.exports.addComment = function(body,res){
   Complaint.findOne({complaint_id:body.complaint_id},function(err, data) {
       if(err)
@@ -257,7 +257,7 @@ module.exports.likeComment = function(body,res){
         else
         {
             //to find 
-            if(data.comments[body.comment_id].likes.userid(body.userid) == -1)
+            if(data.comments[body.comment_id].likes.userid.indexOf(body.userid) == -1)
             {
                 data.comments[body.comment_id].likes.count+=1;
                 data.comments[body.comment_id].likes.userid.push(body.userid);
@@ -274,4 +274,23 @@ module.exports.likeComment = function(body,res){
             }
         }
     });
+};
+
+//To update complaint status, Require complaint_id , is_resolved
+module.exports.updateStatus = function(body,res){
+    Complaint.findOne({complaint_id:body.complaint_id},function(err,data){
+        if(err)
+        {
+            res.json(err);
+        }
+        else
+        {
+            data.is_resolved = body.is_resolved;
+            data.save(function(err){
+                   if(err)
+                    res.json({error:true , message: "Unable to update status"});
+                });
+            res.json({error:false , message: "Status Updated Successfully"});
+        }
+    });  
 };
